@@ -1,36 +1,48 @@
 #include <iostream>
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include "preprocess.h"
-using namespace cv;
-using namespace std;
-Mat image_read(const std::string& file_name, int flag=IMREAD_COLOR){
-    Mat image=cv::imread(file_name,flag=flag);
-    return image;
+#include "Tensorrt.h"
+void initInputParams(common::InputParams &inputParams){
+    inputParams.ImgH = 1600;
+    inputParams.ImgW = 900;
+    inputParams.ImgC = 3;
+    inputParams.BatchSize = 1;
+    inputParams.IsPadding = true;
+    inputParams.InputTensorNames = std::vector<std::string>{"img","cam2img","cam2img_inerse"};
+    inputParams.OutputTensorNames = std::vector<std::string>{"bboxes","score","labels","dir_scores","attrs"};
+//    inputParams.pFunction = [](const unsigned char &x){return static_cast<float>(x) /255;};
 }
-void printFloatArrayAddress(float* float_array,int size) {
 
-    std::cout << "Contents of the float array:" << std::endl;
-    for (int i = 0; i < size; ++i) {
-        std::cout << float_array[i] << "\t";
-    }
-    std::cout << std::endl;
+void initTrtParams(common::TrtParams &trtParams){
+    trtParams.ExtraWorkSpace = 0;
+    trtParams.FP32 = true;
+    trtParams.FP16 = false;
+    trtParams.Int32 = false;
+    trtParams.Int8 = false;
+    trtParams.MaxBatch = 100;
+    trtParams.MinTimingIteration = 1;
+    trtParams.AvgTimingIteration = 2;
+    trtParams.CalibrationTablePath = "/work/tensorRT-7/data/fcosInt8.calibration";
+    trtParams.CalibrationImageDir = "/home/cqjtu/Documents/dataset/test";
+    trtParams.OnnxPath = "/home/cqjtu/CLionProjects/myTensorrt/r101/end2end.onnx";
+    trtParams.SerializedPath = "/home/cqjtu/CLionProjects/myTensorrt/r101/end2end.engine";
+}
+
+void initDetectParams(common::DetectParams &fcosParams){
+    fcosParams.Strides = std::vector<int> {8, 16, 32, 64, 128};
+    fcosParams.AnchorPerScale = -1;
+    fcosParams.NumClass = 80;
+    fcosParams.NMSThreshold = 0.45;
+    fcosParams.PostThreshold = 0.3;
 }
 int main() {
     std::cout << "Hello, World!" << std::endl;
-    std::string file_name="/home/cqjtu/Pictures/CAM_FRONT__1526915630862465.jpg";
-    Mat back_image= image_read(file_name);
-    cv::Size size(640, 640);
-    float *output = warpaffine_to_center_align(back_image, size);
-//    printFloatArrayAddress(output,size.width*size.height);
-    // 创建一个cv::Mat变量，指向float_container的数据
-    cv::Mat mat(size , CV_32FC3, output);
+    common::InputParams inputParams;
+    common::TrtParams trtParams;
+    common::DetectParams fcosParams;
+    initInputParams(inputParams);
+    initTrtParams(trtParams);
+    initDetectParams(fcosParams);
+    TensorRT trt(inputParams, trtParams);
+    trt.initSession(0);
 
-    // 释放动态分配的内存
-    delete[] output;
-//    cv::imshow("show",output);
-//    cv::waitKey(1000);
-    std::cout<<mat<<endl;
-    cv::imwrite("normalize.jpg", mat);
     return 0;
 }
