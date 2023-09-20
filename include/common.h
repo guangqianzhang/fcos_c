@@ -12,6 +12,8 @@
 #include <driver_types.h>
 #include <cuda_runtime_api.h>
 #include "logger.h"
+#include <chrono>
+#include <utils.h>
 #define CHECK( err ) (HandleError( err, __FILE__, __LINE__ ))
 static void HandleError(cudaError_t err, const char *file, int line ) {
     if (err != cudaSuccess) {

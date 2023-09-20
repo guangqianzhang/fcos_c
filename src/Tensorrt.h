@@ -21,6 +21,9 @@
 #include <mutex>
 #include <thread>
 //! TensorRT Base Class
+//#include "trt_modulated_deform_conv.hpp"
+
+//REGISTER_TENSORRT_PLUGIN(AddScalarPluginCreator);
 class TensorRT{
 protected:
     template <typename T>
@@ -36,7 +39,7 @@ private:
     //! Build the network and construct CudaEngine and Context. It should be called before serializeEngine()
     //! \param onnxPath Onnx file path.
     //! \return Return true if no errors happened.
-    bool buildengine();
+    bool buildToengine();
 
     //! Serialize the CudaEngine. It should be called after constructNetwork();
     //! \param save_path Saved file path
@@ -48,6 +51,7 @@ private:
     //! \return Return true if no errors happened.
     bool deseriazeEngine(const std::string &load_path);
 
+    bool allocator();
 
 //protected:
 public:
@@ -57,6 +61,9 @@ public:
     TensorRT(common::InputParams inputParams, common::TrtParams trtParams);
 
     ~TensorRT();
+
+
+    std::vector<common::Bbox> predOneImage(const cv::Mat &image, float postThres, float nmsThres) ;
 
     //! PreProcess
      std::vector<float> preProcess(const std::vector<cv::Mat> &images);
@@ -82,7 +89,24 @@ public:
     bool LoadEngine();
     bool OnnxToTRTModel(const std::string& engine_file);
 };
-
+#include <dlfcn.h>
+inline void loadLibrary(const std::string &path)
+{
+#ifdef _MSC_VER
+    void *handle = LoadLibrary(path.c_str());
+#else
+    int32_t flags {RTLD_LAZY};
+    void   *handle = dlopen(path.c_str(), flags);
+#endif
+    if (handle == nullptr)
+    {
+#ifdef _MSC_VER
+        std::cout << "Could not load plugin library: " << path << std::endl;
+#else
+        std::cout << "Could not load plugin library: " << path << ", due to: " << dlerror() << std::endl;
+#endif
+    }
+}
 
 
 #endif //FCOS_C_TENSORRT_H

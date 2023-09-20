@@ -6,8 +6,8 @@ void initInputParams(common::InputParams &inputParams){
     inputParams.ImgC = 3;
     inputParams.BatchSize = 1;
     inputParams.IsPadding = true;
-    inputParams.InputTensorNames = std::vector<std::string>{"img","cam2img","cam2img_inerse"};
-    inputParams.OutputTensorNames = std::vector<std::string>{"bboxes","score","labels","dir_scores","attrs"};
+    inputParams.InputTensorNames = std::vector<std::string>{"img","cam2img_inerse"};
+    inputParams.OutputTensorNames = std::vector<std::string>{"bboxes","dir_scores"};
 //    inputParams.pFunction = [](const unsigned char &x){return static_cast<float>(x) /255;};
 }
 
@@ -42,7 +42,36 @@ int main() {
     initTrtParams(trtParams);
     initDetectParams(fcosParams);
     TensorRT trt(inputParams, trtParams);
-    trt.initSession(0);
+    trt.LoadEngine();
+//using namespace std;
+//    char *trtModelStream{nullptr};
+//    const std::string engine_file_path =trtParams.OnnxPath;
+//    std::ifstream file(engine_file_path, std::ios::binary);
+//    if (file.good()) {
+//        file.seekg(0, file.end);
+//        size_t size = file.tellg();
+//        file.seekg(0, file.beg);
+//        trtModelStream = new char[size];
+//        assert(trtModelStream);
+//        file.read(trtModelStream, size);
+//        file.close();
+//    }
 
+
+//    std::ifstream file(trtParams.SerializedPath, std::ios::binary);
+//    if (!file.good()) {
+//        std::cerr << "read " << trtParams.SerializedPath << " error!" << std::endl;
+//        assert(false);
+//    }
+//    std::cout << "loading filename from:" << trtParams.SerializedPath << std::endl;
+//    size_t size = 0;
+//    file.seekg(0, file.end);
+//    size = file.tellg();
+//    file.seekg(0, file.beg);
+//    char *serialized_engine = new char[size];
+//    assert(serialized_engine);
+//    file.read(serialized_engine, size);
+//    file.close();
+//std::cout<<trtModelStream<<std::endl;
     return 0;
 }

@@ -293,7 +293,7 @@ public:
         , mBatchSize(batchSize)
     {
         // Create host and device buffers
-        for (int i = 0; i < mEngine->getNbBindings(); i++)
+        for (int i = 0; i < mEngine->getNbIOTensors(); i++)
         {
             auto dims = context ? context->getBindingDimensions(i) : mEngine->getBindingDimensions(i);
             size_t vol = context ? 1 : static_cast<size_t>(mBatchSize);
