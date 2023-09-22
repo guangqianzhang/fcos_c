@@ -67,7 +67,7 @@
 #include "trt_deform_conv_kernel.cuh"
 #include "trt_deform_conv_kernel.hpp"
 #include "trt_plugin_helper.hpp"
-
+//根据offset找到新的邻域点，再拼接到中心点特征上，使得通道数由C变成C*kh*kw
 template <typename scalar_t>
 void deform_conv_im2col(const scalar_t* input, const scalar_t* offset, scalar_t* column,
                         const int channels, const int height, const int width, const int ksize_h,

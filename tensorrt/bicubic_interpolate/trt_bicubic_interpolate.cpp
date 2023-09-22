@@ -23,7 +23,7 @@ TRTBicubicInterpolate::TRTBicubicInterpolate(const std::string &name,
 TRTBicubicInterpolate::TRTBicubicInterpolate(const std::string name, const void *data,
                                              size_t length)
     : TRTPluginBase(name) {
-  deserialize_value(&data, &length, &mScaleFactor);
+  deserialize_value(&data, &length, &mScaleFactor); //
   deserialize_value(&data, &length, &mAlignCorners);
 }
 
@@ -34,7 +34,7 @@ nvinfer1::IPluginV2DynamicExt *TRTBicubicInterpolate::clone() const TRT_NOEXCEPT
 
   return plugin;
 }
-
+//batch这一维度必须是explicit的
 nvinfer1::DimsExprs TRTBicubicInterpolate::getOutputDimensions(
     int outputIndex, const nvinfer1::DimsExprs *inputs, int nbInputs,
     nvinfer1::IExprBuilder &exprBuilder) TRT_NOEXCEPT {
@@ -51,7 +51,7 @@ nvinfer1::DimsExprs TRTBicubicInterpolate::getOutputDimensions(
 
   return ret;
 }
-
+//判断是否支持特定类型
 bool TRTBicubicInterpolate::supportsFormatCombination(int pos,
                                                       const nvinfer1::PluginTensorDesc *ioDesc,
                                                       int nbInputs, int nbOutputs) TRT_NOEXCEPT {
@@ -68,14 +68,14 @@ void TRTBicubicInterpolate::configurePlugin(const nvinfer1::DynamicPluginTensorD
                                             int nbInputs,
                                             const nvinfer1::DynamicPluginTensorDesc *outputs,
                                             int nbOutputs) TRT_NOEXCEPT {}
-
+//确定这个op需要多大的显存空间去运行
 size_t TRTBicubicInterpolate::getWorkspaceSize(const nvinfer1::PluginTensorDesc *inputs,
                                                int nbInputs,
                                                const nvinfer1::PluginTensorDesc *outputs,
                                                int nbOutputs) const TRT_NOEXCEPT {
   return 0;
 }
-
+//实际插件op的执行函数，我们自己实现的cuda操作,显存中的中间变量，可以通过传过来的指针参数workspace获取
 int TRTBicubicInterpolate::enqueue(const nvinfer1::PluginTensorDesc *inputDesc,
                                    const nvinfer1::PluginTensorDesc *outputDesc,
                                    const void *const *inputs, void *const *outputs, void *workSpace,
@@ -115,9 +115,9 @@ nvinfer1::DataType TRTBicubicInterpolate::getOutputDataType(int index,
 const char *TRTBicubicInterpolate::getPluginType() const TRT_NOEXCEPT { return PLUGIN_NAME; }
 
 const char *TRTBicubicInterpolate::getPluginVersion() const TRT_NOEXCEPT { return PLUGIN_VERSION; }
-
+ //op返回多少个Tensor
 int TRTBicubicInterpolate::getNbOutputs() const TRT_NOEXCEPT { return 1; }
-
+//返回序列化时需要写多少字节到buffer中
 size_t TRTBicubicInterpolate::getSerializationSize() const TRT_NOEXCEPT {
   return serialized_size(mScaleFactor) + serialized_size(mAlignCorners);
 }

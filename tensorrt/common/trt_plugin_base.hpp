@@ -69,7 +69,7 @@ class TRTPluginCreatorBase : public nvinfer1::IPluginCreator {
   const char *getPluginNamespace() const TRT_NOEXCEPT override { return mNamespace.c_str(); }
 
  protected:
-  nvinfer1::PluginFieldCollection mFC;
+  nvinfer1::PluginFieldCollection mFC;  //插件op所需要的权重和参数
   std::vector<nvinfer1::PluginField> mPluginAttributes;
   std::string mNamespace;
 };

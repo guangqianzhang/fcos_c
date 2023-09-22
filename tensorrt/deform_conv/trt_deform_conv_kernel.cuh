@@ -66,7 +66,9 @@
 #include <cuda_fp16.h>
 
 #include "common_cuda_helper.hpp"
-
+/*重新获取新的邻域点特征，再进行卷积，而不是邻接的点
+1）根据offset收集新的邻域特征；
+2）再进行卷积。*/
 template <typename scalar_t>
 __device__ __forceinline__ scalar_t deformable_im2col_bilinear(const scalar_t* __restrict__ input,
                                                                const int height, const int width,
