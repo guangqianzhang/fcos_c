@@ -1,0 +1,36 @@
+fcos3d:
+    model_config: "/home/cqjtu/PycharmProjects/cdc/fcos3d_r50_dc/fcos3d_r50_dc.py"
+    deploy_config: /home/cqjtu/PycharmProjects/cdc/fcos3d_r50_dc/monocular-detection_tensorrt_dynamic-320x320-1600x1600.py
+    onnx_file:     "/home/nvidia/documents/fcos3d_r50_dc/end2end.onnx"
+    engine_file:   "end2end.engine"
+    calib_file:  ～
+    input_path: ～
+    output_path: ～
+    precision: 16
+    BATCH_SIZE:    1
+    INPUT_CHANNEL: 3
+    IMAGE_WIDTH:   1600
+    IMAGE_HEIGHT:  928
+    image_order:   "BCHW"
+    channel_order: "BGR"
+    obj_threshold: 0.4
+    nms_threshold: 0.45
+    agnostic:      False
+    strides:       [8, 16, 32]
+    num_anchors:   [3,  3,  3]
+    input_shapes:
+        input: 
+            min_shape: [1, 3, 320, 320]
+            opt_shape: [1, 3, 928, 1600]
+            max_shape: [1, 3, 1600, 1600]
+    img_mean:      [ 0, 0, 0 ]
+    img_std:       [ 1, 1, 1 ]
+    alpha:         255.0
+    resize:        "keep_ratio"
+    box_type_3d: 'Camera'
+    test_pipeline:
+        pipeline:
+            - type: 'LoadImageFromFileMono3D'
+            - type: 'MultiScaleFlipAug'
+    cam_intrinsic: [[1219.08,0,805.8],[0,1232.41,478.171],[0,0,1]]
+
